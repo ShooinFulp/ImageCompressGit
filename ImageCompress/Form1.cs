@@ -19,6 +19,7 @@ namespace ImageCompress
         {
             InitializeComponent();
         }
+
         //开始停止开关
         private bool isStop = false;
         //文件夹选择

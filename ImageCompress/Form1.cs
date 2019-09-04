@@ -54,6 +54,8 @@ namespace ImageCompress
         /// <param name="e"></param>
         private void btnCompress_Click(object sender, EventArgs e)
         {
+            //开关打开
+            isStop = false;
             //获取路径下所有图片信息
             var path = txtPath.Text;
             if (path.Equals("")) return;

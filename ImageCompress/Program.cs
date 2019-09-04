@@ -19,6 +19,7 @@ namespace ImageCompress
             Application.Run(new Form1());
 
 
+
         }
     }
 }

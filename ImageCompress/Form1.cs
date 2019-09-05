@@ -266,6 +266,8 @@ namespace ImageCompress
         private void btnStopCompress_Click(object sender, EventArgs e)
         {
             isStop = true;
+            this.lbOutText.Items.Clear();
+            this.lblResult.Text = "";
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)

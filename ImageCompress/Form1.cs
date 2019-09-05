@@ -212,7 +212,7 @@ namespace ImageCompress
         {
             List<FileInfo> pathList = new List<FileInfo>();
 
-            int intMemory = Convert.ToInt32(memory) * 102400;
+            double intMemory = Convert.ToDouble(memory) * 102400;
 
             foreach (FileInfo fileInfo in fileInfoList)
             {

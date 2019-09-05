@@ -111,6 +111,7 @@
             // 
             // btnStopCompress
             // 
+            this.btnStopCompress.Enabled = false;
             this.btnStopCompress.Location = new System.Drawing.Point(743, 10);
             this.btnStopCompress.Name = "btnStopCompress";
             this.btnStopCompress.Size = new System.Drawing.Size(75, 23);

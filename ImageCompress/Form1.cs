@@ -63,7 +63,7 @@ namespace ImageCompress
             FileInfo[] fileInfoList = Path2FileList(path);
 
             //获取大于100k的图片
-            List<FileInfo> pathList = GetGreater100KImageFile(fileInfoList);
+            List<FileInfo> pathList = GetGreater100KImageFile(fileInfoList, this.txtMemory.Text);
 
             string savePath = this.txtNewPath.Text;//保存路径
             if (savePath.Equals("")) return;
@@ -86,52 +86,87 @@ namespace ImageCompress
         /// <param name="level">压缩质量   0-100    0为最低画质   100为最高画质</param>
         private void ComPress(List<FileInfo> pathList, string savePath, int level)
         {
+
+            int compressCount = 0;//成功压缩次数
+            List<string> newFilePath = new List<string>();//新图片路径
+            int onceCount = Convert.ToInt32(this.txtCount.Text);//筛选内存
+
+            foreach (var imagePath in pathList)
+            {
+                //停止压缩
+                if (isStop) break;
+
+                Bitmap bitmap = new Bitmap(imagePath.FullName);
+                string newFullName = savePath + "\\" + imagePath.Name;
+                newFilePath.Add(newFullName);
+                ImageHelper.Compress(bitmap, newFullName, level, imagePath.Extension);
+                bitmap.Dispose();
+                compressCount++;
+                //显示当前操作的记录日志
+                ShowActiveState(compressCount, imagePath, newFullName);
+
+                //如果不是第一次   则进入判断是否进行删除移动操作
+                if (compressCount == 0) continue;
+
+
+                //如果实际图片数量小于输入图片数量且压缩完成   则直接移动删除图片
+                if (onceCount > pathList.Count && compressCount == pathList.Count)
+                {
+                    DeleteOldFileAndMoveNewFile(pathList, newFilePath, onceCount);
+
+                    ShowState(pathList, compressCount);
+
+                    return;
+                }
+                //如果压缩到达了输入的个数则进行删除已经压缩过的原图片    然后移动图片至原图片目录
+                if (compressCount % onceCount != 0) continue;
+                DeleteOldFileAndMoveNewFile(pathList, newFilePath, onceCount);
+
+                ShowState(pathList, compressCount);
+
+            }
+            //删除移动剩余的图片
+            DeleteOldFileAndMoveNewFile(pathList, newFilePath, newFilePath.Count);
+            ShowState(pathList, compressCount);
+
+        }
+
+        /// <summary>
+        /// 显示当前操作的记录日志
+        /// </summary>
+        /// <param name="compressCount"></param>
+        /// <param name="imagePath"></param>
+        /// <param name="newFullName"></param>
+        private void ShowActiveState(int compressCount, FileInfo imagePath, string newFullName)
+        {
             if (this.InvokeRequired)
             {
-                this.Invoke(new Action(() =>
-                ComPress(pathList, savePath, level)
+                this.BeginInvoke(new Action(() =>
+            //显示操作日志
+            lbOutText.Items.Add(string.Format(@"{2}：原图片路径{0}        压缩后图片路径{1};", imagePath.FullName, newFullName, compressCount))
+                ));
+            }
+        }
+
+        /// <summary>
+        /// 显示状态
+        /// </summary>
+        /// <param name="pathList"></param>
+        /// <param name="compressCount"></param>
+        private void ShowState(List<FileInfo> pathList, int compressCount)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new Action(() =>
+            //显示结果
+            lblResult.Text = string.Format(@"
+                 总共{0}个图片；
+                 成功压缩{1}个图片；
+            ", pathList.Count, compressCount)
                 ));
             }
             else
             {
-                int compressCount = 0;//成功压缩次数
-                List<string> newFilePath = new List<string>();//新图片路径
-
-                foreach (var imagePath in pathList)
-                {
-                    //停止压缩
-                    if (isStop) break;
-
-                    Bitmap bitmap = new Bitmap(imagePath.FullName);
-                    string newFullName = savePath + "\\" + imagePath.Name;
-                    newFilePath.Add(newFullName);
-                    ImageHelper.Compress(bitmap, newFullName, level, imagePath.Extension);
-                    bitmap.Dispose();
-                    compressCount++;
-                    //显示操作日志
-                    lbOutText.Items.Add(string.Format(@"{2}：原图片路径{0}        压缩后图片路径{1};", imagePath.FullName, newFullName, compressCount));
-
-                    //如果不是第一次   则进入判断是否进行删除移动操作
-                    if (compressCount == 0) continue;
-
-                    int onceCount = Convert.ToInt32(this.txtCount.Text);
-                    //如果实际图片数量小于输入图片数量且压缩完成   则直接移动删除图片
-                    if (onceCount > pathList.Count && compressCount == pathList.Count)
-                    {
-                        DeleteOldFileAndMoveNewFile(pathList, newFilePath, onceCount);
-                        //显示结果
-                        lblResult.Text = string.Format(@"
-                             总共{0}个图片；
-                             成功压缩{1}个图片；
-                        ", pathList.Count, compressCount);
-                        return;
-                    }
-                    //如果压缩到达了输入的个数则进行删除已经压缩过的原图片    然后移动图片至原图片目录
-                    if (compressCount % onceCount != 0) continue;
-                    DeleteOldFileAndMoveNewFile(pathList, newFilePath, onceCount);
-                }
-                //删除移动剩余的图片
-                DeleteOldFileAndMoveNewFile(pathList, newFilePath, newFilePath.Count);
                 //显示结果
                 lblResult.Text = string.Format(@"
                  总共{0}个图片；
@@ -173,14 +208,16 @@ namespace ImageCompress
         /// </summary>
         /// <param name="fileInfoList">文件数组</param>
         /// <returns>List<FileInfo> </returns>
-        private static List<FileInfo> GetGreater100KImageFile(FileInfo[] fileInfoList)
+        private static List<FileInfo> GetGreater100KImageFile(FileInfo[] fileInfoList, string memory)
         {
             List<FileInfo> pathList = new List<FileInfo>();
+
+            int intMemory = Convert.ToInt32(memory) * 102400;
 
             foreach (FileInfo fileInfo in fileInfoList)
             {
                 //小于100k不压缩
-                // if (fileInfo.Length < 102400) continue;
+                if (fileInfo.Length < intMemory) continue;
 
                 var extension = fileInfo.Extension;
                 if (extension.Equals(ImageTypeEnum.PNG) || extension.Equals(ImageTypeEnum.JPGE) || extension.Equals(ImageTypeEnum.JPG))
@@ -229,6 +266,12 @@ namespace ImageCompress
         private void btnStopCompress_Click(object sender, EventArgs e)
         {
             isStop = true;
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+            this.Dispose();
         }
     }
 }

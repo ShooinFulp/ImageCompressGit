@@ -42,6 +42,9 @@
             this.lbOutText = new System.Windows.Forms.ListBox();
             this.label4 = new System.Windows.Forms.Label();
             this.txtCount = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtMemory = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnSelectPath
@@ -108,6 +111,7 @@
             // 
             // btnStopCompress
             // 
+            this.btnStopCompress.Enabled = false;
             this.btnStopCompress.Location = new System.Drawing.Point(743, 10);
             this.btnStopCompress.Name = "btnStopCompress";
             this.btnStopCompress.Size = new System.Drawing.Size(75, 23);
@@ -149,7 +153,7 @@
             this.lbOutText.ItemHeight = 12;
             this.lbOutText.Location = new System.Drawing.Point(12, 39);
             this.lbOutText.Name = "lbOutText";
-            this.lbOutText.Size = new System.Drawing.Size(978, 544);
+            this.lbOutText.Size = new System.Drawing.Size(1048, 544);
             this.lbOutText.TabIndex = 13;
             // 
             // label4
@@ -165,15 +169,44 @@
             // 
             this.txtCount.Location = new System.Drawing.Point(885, 11);
             this.txtCount.Name = "txtCount";
-            this.txtCount.Size = new System.Drawing.Size(100, 21);
+            this.txtCount.Size = new System.Drawing.Size(56, 21);
             this.txtCount.TabIndex = 15;
             this.txtCount.Text = "1000";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(946, 15);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(65, 12);
+            this.label5.TabIndex = 16;
+            this.label5.Text = "筛选内存：";
+            // 
+            // txtMemory
+            // 
+            this.txtMemory.Location = new System.Drawing.Point(1005, 10);
+            this.txtMemory.Name = "txtMemory";
+            this.txtMemory.Size = new System.Drawing.Size(27, 21);
+            this.txtMemory.TabIndex = 17;
+            this.txtMemory.Text = "1";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(1039, 15);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(11, 12);
+            this.label6.TabIndex = 18;
+            this.label6.Text = "M";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1002, 685);
+            this.ClientSize = new System.Drawing.Size(1072, 685);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.txtMemory);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.txtCount);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.lbOutText);
@@ -191,6 +224,7 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "图片压缩";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -212,6 +246,9 @@
         private System.Windows.Forms.ListBox lbOutText;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtCount;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txtMemory;
+        private System.Windows.Forms.Label label6;
     }
 }
 

@@ -142,8 +142,12 @@ namespace ImageCompress
             if (this.InvokeRequired)
             {
                 this.BeginInvoke(new Action(() =>
-            //显示操作日志
-            lbOutText.Items.Add(string.Format(@"{2}：原图片路径{0}        压缩后图片路径{1};", imagePath.FullName, newFullName, compressCount))
+                {
+                    //显示操作日志
+                    lbOutText.Items.Add(string.Format(@"{2}：原图片路径{0}        压缩后图片路径{1};", imagePath.FullName, newFullName, compressCount));
+                    //滚动条跟着记录下滚
+                    lbOutText.SelectedIndex = lbOutText.Items.Count - 1;
+                }
                 ));
             }
         }
